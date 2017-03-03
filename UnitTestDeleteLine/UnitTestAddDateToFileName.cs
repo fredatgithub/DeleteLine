@@ -11,7 +11,7 @@ namespace UnitTestDeleteLine
   public class UnitTestAddDateToFileName
   {
     [TestMethod]
-    public void TestMethod_string_with_star()
+    public void TestMethod_filename()
     {
       const string source = "filename.txt";
       string tmpDateTime = DateTime.Now.ToShortDateString();

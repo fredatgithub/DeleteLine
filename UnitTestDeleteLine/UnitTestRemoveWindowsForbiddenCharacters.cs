@@ -40,7 +40,34 @@ namespace UnitTestDeleteLine
     public void TestMethod_string_with_colon()
     {
       const string source = "he said: be happy";
-      const string expected = "he said: be happy";
+      const string expected = "he said be happy";
+      string result = DeleteFunc.RemoveWindowsForbiddenCharacters(source);
+      Assert.AreEqual(result, expected);
+    }
+
+    [TestMethod]
+    public void TestMethod_string_with_question_mark()
+    {
+      const string source = "What is your age?";
+      const string expected = "What is your age";
+      string result = DeleteFunc.RemoveWindowsForbiddenCharacters(source);
+      Assert.AreEqual(result, expected);
+    }
+
+    [TestMethod]
+    public void TestMethod_string_with_greater_than()
+    {
+      const string source = "five is greater than >four";
+      const string expected = "five is greater than four";
+      string result = DeleteFunc.RemoveWindowsForbiddenCharacters(source);
+      Assert.AreEqual(result, expected);
+    }
+
+    [TestMethod]
+    public void TestMethod_string_with_lesser_than()
+    {
+      const string source = "four is lesser than <five";
+      const string expected = "four is lesser than five";
       string result = DeleteFunc.RemoveWindowsForbiddenCharacters(source);
       Assert.AreEqual(result, expected);
     }
