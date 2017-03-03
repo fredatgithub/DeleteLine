@@ -59,10 +59,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="UnitTestAddDateToFileName.cs" />
     <Compile Include="UnitTestDeleteLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTestNegative.cs" />
     <Compile Include="UnitTestPlural.cs" />
+    <Compile Include="UnitTestRemoveWindowsForbiddenCharacters.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DeleteLine\DeleteLine.csproj">

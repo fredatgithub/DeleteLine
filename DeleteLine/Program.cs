@@ -433,7 +433,7 @@ namespace DeleteLine
     /// </summary>
     /// <param name="path">The initial string to be processed.</param>
     /// <returns>A string without Windows forbidden characters.</returns>
-    private static string RemoveWindowsForbiddenCharacters(string path)
+    public static string RemoveWindowsForbiddenCharacters(string path)
     {
       string result = path;
       // We remove all characters which are forbidden for a Windows path
@@ -451,7 +451,7 @@ namespace DeleteLine
     /// </summary>
     /// <param name="fileName">The name of the file.</param>
     /// <returns>A string with the date at the end of the file name.</returns>
-    private static string AddDateToFileName(string fileName)
+    public static string AddDateToFileName(string fileName)
     {
       string result = string.Empty;
       // We strip the fileName and add a datetime before the extension of the filename.
