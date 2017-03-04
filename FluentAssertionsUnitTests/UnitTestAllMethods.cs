@@ -1,13 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using FluentAssertions;
 
 namespace FluentAssertionsUnitTests
 {
-  [TestClass]
+  [TestFixture]
   public class UnitTestAllMethods
   {
-    [TestCase]
+    [Test]
     public void Should_Start_With_Example()
     {
       const string actual = "ABCDEFGHI";
