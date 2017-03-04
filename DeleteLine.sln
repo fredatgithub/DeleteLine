@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeleteLine", "DeleteLine\De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestDeleteLine", "UnitTestDeleteLine\UnitTestDeleteLine.csproj", "{10F1AF26-DF53-464C-BB95-BE799F5FE2C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentAssertionsUnitTests", "FluentAssertionsUnitTests\FluentAssertionsUnitTests.csproj", "{AA1F5556-069B-4B75-A4DD-ED8F7EF515BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,20 +23,12 @@ Global
 		{10F1AF26-DF53-464C-BB95-BE799F5FE2C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10F1AF26-DF53-464C-BB95-BE799F5FE2C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10F1AF26-DF53-464C-BB95-BE799F5FE2C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA1F5556-069B-4B75-A4DD-ED8F7EF515BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA1F5556-069B-4B75-A4DD-ED8F7EF515BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA1F5556-069B-4B75-A4DD-ED8F7EF515BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA1F5556-069B-4B75-A4DD-ED8F7EF515BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://sogeti-barclays-e-tresorerie.visualstudio.com/
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = DeleteLine\\DeleteLine.csproj
-		SccProjectName1 = DeleteLine
-		SccLocalPath1 = DeleteLine
-		SccProjectUniqueName2 = UnitTestDeleteLine\\UnitTestDeleteLine.csproj
-		SccProjectName2 = UnitTestDeleteLine
-		SccLocalPath2 = UnitTestDeleteLine
 	EndGlobalSection
 EndGlobal
