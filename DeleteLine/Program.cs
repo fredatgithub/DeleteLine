@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -103,6 +103,7 @@ namespace DeleteLine
       {
         Settings.Default.LogFileName = "Log.txt";
         Settings.Default.Save();
+        datedLogFileName = AddDateToFileName(Settings.Default.LogFileName);
       }
 
       // if Company name is empty in XML file then we define it with a default value like "Company name"
@@ -123,7 +124,7 @@ namespace DeleteLine
       }
 
       // Add version of the program at the beginning of the log
-      Log(datedLogFileName, argumentDictionary["log"], $"DeleteFileLine.exe is in version {GetAssemblyVersion()}");
+      Log(datedLogFileName, argumentDictionary["log"], $"{Assembly.GetExecutingAssembly().GetName().Name} is in version {GetAssemblyVersion()}");
 
       // We log all arguments passed in.
       foreach (KeyValuePair<string, string> keyValuePair in argumentDictionary)
@@ -314,8 +315,15 @@ namespace DeleteLine
           }
         }
 
-        Log(Settings.Default.LogFileName, argumentDictionary["log"], $"The header was {Negative(fileHasHeader)}found in the file.");
-        Log(Settings.Default.LogFileName, argumentDictionary["log"], $"The footer was {Negative(fileHasFooter)}found in the file.");
+        if (argumentDictionary["deleteheader"] == "true")
+        {
+          Log(Settings.Default.LogFileName, argumentDictionary["log"], $"The header was {Negative(fileHasHeader)}found in the file.");
+        }
+
+        if (argumentDictionary["deletefooter"] == "true")
+        {
+          Log(Settings.Default.LogFileName, argumentDictionary["log"], $"The footer was {Negative(fileHasFooter)}found in the file.");
+        }
       }
       else
       {
@@ -433,7 +441,7 @@ namespace DeleteLine
     /// </summary>
     /// <param name="path">The initial string to be processed.</param>
     /// <returns>A string without Windows forbidden characters.</returns>
-    public static string RemoveWindowsForbiddenCharacters(string path)
+    private static string RemoveWindowsForbiddenCharacters(string path)
     {
       string result = path;
       // We remove all characters which are forbidden for a Windows path
@@ -451,7 +459,7 @@ namespace DeleteLine
     /// </summary>
     /// <param name="fileName">The name of the file.</param>
     /// <returns>A string with the date at the end of the file name.</returns>
-    public static string AddDateToFileName(string fileName)
+    private static string AddDateToFileName(string fileName)
     {
       string result = string.Empty;
       // We strip the fileName and add a datetime before the extension of the filename.
