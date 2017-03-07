@@ -35,10 +35,11 @@ namespace DeleteLine
         {"deletefirstcolumn", "false"},
         {"samename", "true"},
         {"newname", string.Empty},
-        {"log", "false" },
-        {"removeemptylines", "true" },
-        {"countlines", "false" },
-        {"verifyheaderandfooter", "false" }
+        {"log", "false"},
+        {"removeemptylines", "true"},
+        {"countlines", "false"},
+        {"verifyheaderandfooter", "false"},
+        {"trimtrailingspace", "false"}
       };
       // the variable numberOfInitialDictionaryItems is used for the log to list all non-standard arguments passed in.
       int numberOfInitialDictionaryItems = 13;
@@ -346,7 +347,8 @@ namespace DeleteLine
       if (argumentDictionary["countlines"] == "true")
       {
         // Managing return code : we write a file with the return code which will be read by the DOS script to import SQL tables into a database.
-        const string returnCodeFileName = "ReturnCode.txt";
+        string returnCodeFileName = string.Empty;
+        returnCodeFileName = Settings.Default.ReturnCodeFileName == string.Empty ? "ReturnCode.txt" : Settings.Default.ReturnCodeFileName;
         try
         {
           File.Delete(returnCodeFileName);
@@ -541,6 +543,7 @@ namespace DeleteLine
       display("/removeemptylines:<true or false> true by default");
       display("countlines:<true or false> false by default");
       display("verifyheaderandfooter:<true or false> false by default");
+      display("trimtrailingspace:<true or false> false by default");
       display(string.Empty);
       display("Examples:");
       display(string.Empty);
