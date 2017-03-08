@@ -2,9 +2,6 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DeleteLine.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="CompanyName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Barclays France</Value>
-    </Setting>
     <Setting Name="LogFileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">log.txt</Value>
     </Setting>
@@ -19,6 +16,12 @@
     </Setting>
     <Setting Name="ReturnCodeFooterMissing" Type="System.Byte" Scope="User">
       <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="CompanyName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Company name</Value>
+    </Setting>
+    <Setting Name="ReturnCodeFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ReturnCode.txt</Value>
     </Setting>
   </Settings>
 </SettingsFile>
