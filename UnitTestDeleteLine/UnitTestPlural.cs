@@ -36,5 +36,14 @@ namespace UnitTestDeleteLine
       string result = DeleteFunc.Plural(source);
       Assert.AreEqual(result, expected);
     }
+
+    [TestMethod]
+    public void TestMethod_3()
+    {
+      const int source = 3;
+      const string expected = "s";
+      string result = DeleteFunc.Plural(source);
+      Assert.AreEqual(result, expected);
+    }
   }
 }
