@@ -38,8 +38,8 @@ namespace DeleteLine
         {"log", "false"},
         {"removeemptylines", "true"},
         {"countlines", "false"},
-        {"verifyheaderandfooter", "false"},
-        {"trimtrailingspace", "false"}
+        {"verifyheaderandfooter", "false"}
+        //{"trimtrailingspace", "false"} // to be added if necessary
       };
       // the variable numberOfInitialDictionaryItems is used for the log to list all non-standard arguments passed in.
       int numberOfInitialDictionaryItems = 13;
@@ -443,7 +443,7 @@ namespace DeleteLine
     /// </summary>
     /// <param name="path">The initial string to be processed.</param>
     /// <returns>A string without Windows forbidden characters.</returns>
-    public static string RemoveWindowsForbiddenCharacters(string path)
+    private static string RemoveWindowsForbiddenCharacters(string path)
     {
       string result = path;
       // We remove all characters which are forbidden for a Windows path
@@ -461,7 +461,7 @@ namespace DeleteLine
     /// </summary>
     /// <param name="fileName">The name of the file.</param>
     /// <returns>A string with the date at the end of the file name.</returns>
-    public static string AddDateToFileName(string fileName)
+    private static string AddDateToFileName(string fileName)
     {
       string result = string.Empty;
       // We strip the fileName and add a datetime before the extension of the filename.
