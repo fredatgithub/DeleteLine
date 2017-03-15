@@ -312,24 +312,24 @@ namespace DeleteLine
           catch (Exception exception)
           {
             Log(datedLogFileName, argumentDictionary["log"], $"The filename: {argumentDictionary["newname"]} cannot be written.");
-            Log(Settings.Default.LogFileName, argumentDictionary["log"], $"The exception is: {exception}");
+            Log(datedLogFileName, argumentDictionary["log"], $"The exception is: {exception}");
           }
         }
 
         if (argumentDictionary["deleteheader"] == "true")
         {
-          Log(Settings.Default.LogFileName, argumentDictionary["log"], $"The header was {Negative(fileHasHeader)}found in the file.");
+          Log(datedLogFileName, argumentDictionary["log"], $"The header was {Negative(fileHasHeader)}found in the file.");
         }
 
         if (argumentDictionary["deletefooter"] == "true")
         {
-          Log(Settings.Default.LogFileName, argumentDictionary["log"], $"The footer was {Negative(fileHasFooter)}found in the file.");
+          Log(datedLogFileName, argumentDictionary["log"], $"The footer was {Negative(fileHasFooter)}found in the file.");
         }
       }
       else
       {
         // filecontent is empty
-        Log(Settings.Default.LogFileName, argumentDictionary["log"], "The file cannot be processed because it is empty.");
+        Log(datedLogFileName, argumentDictionary["log"], "The file cannot be processed because it is empty.");
       }
 
       // Managing return code if header or footer were not found
@@ -359,17 +359,17 @@ namespace DeleteLine
         }
         catch (UnauthorizedAccessException unauthorizedAccessException)
         {
-          Log(Settings.Default.LogFileName, argumentDictionary["log"], $"There was an error while writing the return code file: {returnCodeFileName}. The exception is: {unauthorizedAccessException}");
+          Log(datedLogFileName, argumentDictionary["log"], $"There was an error while writing the return code file: {returnCodeFileName}. The exception is: {unauthorizedAccessException}");
           Console.WriteLine($"There was an error while writing the return code file: {returnCodeFileName}. The exception is:{unauthorizedAccessException}");
         }
         catch (IOException ioException)
         {
-          Log(Settings.Default.LogFileName, argumentDictionary["log"], $"There was an error while writing the return code file: {returnCodeFileName}. The exception is: {ioException}");
+          Log(datedLogFileName, argumentDictionary["log"], $"There was an error while writing the return code file: {returnCodeFileName}. The exception is: {ioException}");
           Console.WriteLine($"There was an error while writing the return code file: {returnCodeFileName}. The exception is:{ioException}");
         }
         catch (Exception exception)
         {
-          Log(Settings.Default.LogFileName, argumentDictionary["log"], $"There was an error while writing the return code file: {returnCodeFileName}. The exception is: {exception}");
+          Log(datedLogFileName, argumentDictionary["log"], $"There was an error while writing the return code file: {returnCodeFileName}. The exception is: {exception}");
           Console.WriteLine($"There was an error while writing the return code file: {returnCodeFileName}. The exception is:{exception}");
         }
       }
@@ -443,7 +443,7 @@ namespace DeleteLine
     /// </summary>
     /// <param name="path">The initial string to be processed.</param>
     /// <returns>A string without Windows forbidden characters.</returns>
-    public static string RemoveWindowsForbiddenCharacters(string path)
+    private static string RemoveWindowsForbiddenCharacters(string path)
     {
       string result = path;
       // We remove all characters which are forbidden for a Windows path
@@ -461,7 +461,7 @@ namespace DeleteLine
     /// </summary>
     /// <param name="fileName">The name of the file.</param>
     /// <returns>A string with the date at the end of the file name.</returns>
-    public static string AddDateToFileName(string fileName)
+    private static string AddDateToFileName(string fileName)
     {
       string result = string.Empty;
       // We strip the fileName and add a datetime before the extension of the filename.
