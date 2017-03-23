@@ -443,7 +443,7 @@ namespace DeleteLine
     /// </summary>
     /// <param name="path">The initial string to be processed.</param>
     /// <returns>A string without Windows forbidden characters.</returns>
-    private static string RemoveWindowsForbiddenCharacters(string path)
+    public static string RemoveWindowsForbiddenCharacters(string path)
     {
       string result = path;
       // We remove all characters which are forbidden for a Windows path
@@ -461,7 +461,7 @@ namespace DeleteLine
     /// </summary>
     /// <param name="fileName">The name of the file.</param>
     /// <returns>A string with the date at the end of the file name.</returns>
-    private static string AddDateToFileName(string fileName)
+    public static string AddDateToFileName(string fileName)
     {
       string result = string.Empty;
       // We strip the fileName and add a datetime before the extension of the filename.
@@ -514,7 +514,7 @@ namespace DeleteLine
     {
       Action<string> display = Console.WriteLine;
       display(string.Empty);
-      display($"DeleteFileLine is a console application written by Sogeti for {Settings.Default.CompanyName}.");
+      display($"DeleteFileLine is a console application written by Freddy Juhel for {Settings.Default.CompanyName}.");
       display($"DeleteFileLine.exe is in version {GetAssemblyVersion()}");
       display("DeleteFileLine needs Microsoft .NET framework 4.0 to run, if you don't have it, download it from microsoft.com.");
       display($"Copyrighted (c) 2017 by {Settings.Default.CompanyName}, all rights reserved.");
