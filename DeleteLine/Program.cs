@@ -59,8 +59,36 @@ namespace DeleteLine
       }
 
       chrono.Start();
+      // we remove Windows forbidden characters from return code file name
+      if (Settings.Default.ReturnCodeFileName != RemoveWindowsForbiddenCharacters(Settings.Default.ReturnCodeFileName))
+      {
+        Settings.Default.ReturnCodeFileName = RemoveWindowsForbiddenCharacters(Settings.Default.ReturnCodeFileName.Trim());
+        Settings.Default.Save();
+      }
+
+      // we delete previous coderetour.txt file
+      if (Settings.Default.ReturnCodeFileName.Trim() == string.Empty)
+      {
+        Settings.Default.ReturnCodeFileName = "ReturnCode.txt";
+        Settings.Default.Save();
+      }
+
+      try
+      {
+        if (File.Exists(Settings.Default.ReturnCodeFileName))
+        {
+          File.Delete(Settings.Default.ReturnCodeFileName);
+        }
+      }
+      catch(Exception exception)
+      {
+        Console.WriteLine("There was an error while trying to delete previous returncode.txt file.");
+        Console.WriteLine($"The exception is {exception.Message}");
+        return;
+      }
+
       // we split arguments into the dictionary
-      foreach (string argument in arguments)
+        foreach (string argument in arguments)
       {
         string argumentKey = string.Empty;
         string argumentValue = string.Empty;
