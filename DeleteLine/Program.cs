@@ -542,7 +542,7 @@ namespace DeleteLine
     {
       Action<string> display = Console.WriteLine;
       display(string.Empty);
-      display($"DeleteFileLine is a console application written by Sogeti for {Settings.Default.CompanyName}.");
+      display($"DeleteFileLine is a console application written by Freddy Juhel for {Settings.Default.CompanyName}.");
       display($"DeleteFileLine.exe is in version {GetAssemblyVersion()}");
       display("DeleteFileLine needs Microsoft .NET framework 4.0 to run, if you don't have it, download it from microsoft.com.");
       display($"Copyrighted (c) 2017 by {Settings.Default.CompanyName}, all rights reserved.");
