@@ -80,11 +80,10 @@ namespace DeleteLine
           File.Delete(Settings.Default.ReturnCodeFileName);
         }
       }
-      catch(Exception exception)
+      catch(Exception exception) // TODO catch different exception like no rights
       {
         Console.WriteLine("There was an error while trying to delete previous returncode.txt file.");
-        Console.WriteLine($"The exception is {exception.Message}");
-        return;
+        Console.WriteLine($"The exception was {exception.Message}");
       }
 
       // we split arguments into the dictionary
