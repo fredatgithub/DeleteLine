@@ -253,11 +253,11 @@ namespace DeleteLine
         {
           if (argumentDictionary["countlines"] == "true")
           {
-            Log(datedLogFileName, argumentDictionary["log"], $"{numberOfLineInfile} lines stated in footer");
+            Log(datedLogFileName, argumentDictionary["log"], $"{numberOfLineInfile} line{Plural(numberOfLineInfile)} stated in footer");
             Log(datedLogFileName, argumentDictionary["log"], $"Footer (which is the last line) has been removed, it was: {fileContent[fileContent.Count - 1]}");
           }
 
-          Log(datedLogFileName, argumentDictionary["log"], $"The file has {fileContent.Count - 1} lines");
+          Log(datedLogFileName, argumentDictionary["log"], $"The file has {fileContent.Count - 1} line{Plural(fileContent.Count)}");
           fileContent.RemoveAt(fileContent.Count - 1);
         }
 
@@ -284,7 +284,7 @@ namespace DeleteLine
         }
         else if (fileContent.Count != numberOfLineInfile && argumentDictionary["countlines"] == "true")
         {
-          Log(datedLogFileName, argumentDictionary["log"], $"The file has not the same number of lines {fileContent.Count} as stated in the last line which is {numberOfLineInfile} lines.");
+          Log(datedLogFileName, argumentDictionary["log"], $"The file has not the same number of lines {fileContent.Count} as stated in the last line which is {numberOfLineInfile} line{Plural(numberOfLineInfile)}s.");
           returnCode = Settings.Default.ReturnCodeKO;
         }
 
