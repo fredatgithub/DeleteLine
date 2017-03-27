@@ -253,11 +253,11 @@ namespace DeleteLine
         {
           if (argumentDictionary["countlines"] == "true")
           {
-            Log(datedLogFileName, argumentDictionary["log"], $"{numberOfLineInfile} lines stated in footer");
+            Log(datedLogFileName, argumentDictionary["log"], $"{numberOfLineInfile} line{Plural(numberOfLineInfile)} stated in footer");
             Log(datedLogFileName, argumentDictionary["log"], $"Footer (which is the last line) has been removed, it was: {fileContent[fileContent.Count - 1]}");
           }
 
-          Log(datedLogFileName, argumentDictionary["log"], $"The file has {fileContent.Count - 1} lines");
+          Log(datedLogFileName, argumentDictionary["log"], $"The file has {fileContent.Count - 1} line{Plural(fileContent.Count)}");
           fileContent.RemoveAt(fileContent.Count - 1);
         }
 
@@ -279,12 +279,12 @@ namespace DeleteLine
         //We check integrity of the file i.e. number of line stated equals to the number of line written
         if (fileContent.Count == numberOfLineInfile && argumentDictionary["countlines"] == "true")
         {
-          Log(datedLogFileName, argumentDictionary["log"], $"The file has the same number of lines as stated in the last line which is {numberOfLineInfile} lines.");
+          Log(datedLogFileName, argumentDictionary["log"], $"The file has the same number of lines as stated in the last line which is {numberOfLineInfile} line{Plural(numberOfLineInfile)}.");
           returnCode = Settings.Default.ReturnCodeOK;
         }
         else if (fileContent.Count != numberOfLineInfile && argumentDictionary["countlines"] == "true")
         {
-          Log(datedLogFileName, argumentDictionary["log"], $"The file has not the same number of lines {fileContent.Count} as stated in the last line which is {numberOfLineInfile} lines.");
+          Log(datedLogFileName, argumentDictionary["log"], $"The file has not the same number of lines {fileContent.Count} as stated in the last line which is {numberOfLineInfile} line{Plural(numberOfLineInfile)}s.");
           returnCode = Settings.Default.ReturnCodeKO;
         }
 
@@ -543,7 +543,7 @@ namespace DeleteLine
       display(string.Empty);
       display($"DeleteFileLine is a console application written by Freddy Juhel for {Settings.Default.CompanyName}.");
       display($"DeleteFileLine.exe is in version {GetAssemblyVersion()}");
-      display("DeleteFileLine needs Microsoft .NET framework 4.0 to run, if you don't have it, download it from microsoft.com.");
+      display("DeleteFileLine needs Microsoft .NET framework 3.5 to run, if you don't have it, download it from microsoft.com.");
       display($"Copyrighted (c) 2017 by {Settings.Default.CompanyName}, all rights reserved.");
       display(string.Empty);
       display("Usage of this program:");
