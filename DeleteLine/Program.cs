@@ -39,10 +39,10 @@ namespace DeleteLine
         {"removeemptylines", "true"},
         {"countlines", "false"},
         {"verifyheaderandfooter", "false"}
-        //{"trimtrailingspace", "false"} // to be added if necessary
+        //{"trimtrailingspace", "false"} // to be added if necessary, dangerous because of the last value
       };
       // the variable numberOfInitialDictionaryItems is used for the log to list all non-standard arguments passed in.
-      int numberOfInitialDictionaryItems = 13;
+      int numberOfInitialDictionaryItems = argumentDictionary.Count;
       var fileContent = new List<string>();
       var fileTransformed = new List<string>();
       int numberOfLineInfile = 0;
@@ -80,7 +80,38 @@ namespace DeleteLine
           File.Delete(Settings.Default.ReturnCodeFileName);
         }
       }
-      catch(Exception exception) // TODO catch different exception like no rights
+      catch (DirectoryNotFoundException directoryNotFoundException)
+      {
+        Console.WriteLine("There was an error while trying to delete previous returncode.txt file.");
+        Console.WriteLine($"The exception was {directoryNotFoundException.Message}");
+      }
+      catch (DriveNotFoundException driveNotFoundException)
+      {
+        Console.WriteLine("There was an error while trying to delete previous returncode.txt file.");
+        Console.WriteLine($"The exception was {driveNotFoundException.Message}");
+      }
+      catch (FileNotFoundException fileNotFoundException)
+      {
+        Console.WriteLine("There was an error while trying to delete previous returncode.txt file.");
+        Console.WriteLine($"The exception was {fileNotFoundException.Message}");
+      }
+
+      catch (PathTooLongException pathTooLongException)
+      {
+        Console.WriteLine("There was an error while trying to delete previous returncode.txt file.");
+        Console.WriteLine($"The exception was {pathTooLongException.Message}");
+      }
+      catch (IOException ioException)
+      {
+        Console.WriteLine("There was an error while trying to delete previous returncode.txt file.");
+        Console.WriteLine($"The exception was {ioException.Message}");
+      }
+      catch (UnauthorizedAccessException unauthorizedAccessException)
+      {
+        Console.WriteLine("There was an error while trying to delete previous returncode.txt file.");
+        Console.WriteLine($"The exception was {unauthorizedAccessException.Message}");
+      }
+      catch(Exception exception)
       {
         Console.WriteLine("There was an error while trying to delete previous returncode.txt file.");
         Console.WriteLine($"The exception was {exception.Message}");
@@ -140,6 +171,11 @@ namespace DeleteLine
         Settings.Default.LogFileName = "Company name";
         Settings.Default.Save();
       }
+      else
+      {
+        Settings.Default.LogFileName = RemoveWindowsForbiddenCharacters(Settings.Default.LogFileName);
+        Settings.Default.Save();
+      }
 
       if (argumentDictionary["filename"].Trim() != string.Empty)
       {
@@ -167,7 +203,7 @@ namespace DeleteLine
       //we log extra arguments
       if (hasExtraArguments && argumentDictionary["log"] == "true")
       {
-        Log(datedLogFileName, argumentDictionary["log"], $"Here are a list of argument passed in but not understood and thus not used.");
+        Log(datedLogFileName, argumentDictionary["log"], "Here are a list of argument passed in but not understood and thus not used (for debug purpose only).");
         for (int i = numberOfInitialDictionaryItems; i <= argumentDictionary.Count - 1; i++)
         {
           Log(datedLogFileName, argumentDictionary["log"], $"Extra argument requested: {argumentDictionary.Keys.ElementAt(i)}");
@@ -201,7 +237,7 @@ namespace DeleteLine
                   {
                     const string tmpErrorMessage = "There was an error while parsing the last line of the file to an integer to know the number of lines in the file.";
                     Log(datedLogFileName, argumentDictionary["log"], $"{tmpErrorMessage}");
-                    Console.WriteLine($"{tmpErrorMessage}");
+                    Console.WriteLine($"{tmpErrorMessage}"); // if no log then display error message in console
                   }
                 }
 
@@ -211,7 +247,7 @@ namespace DeleteLine
                   {
                     fileContent.Add(tmpLine);
                   }
-                  else if (argumentDictionary["removeemptylines"] == "true" && tmpLine != string.Empty)
+                  else if (argumentDictionary["removeemptylines"] == "true" && tmpLine.Trim() != string.Empty)
                   {
                     fileContent.Add(tmpLine);
                   }
@@ -355,7 +391,7 @@ namespace DeleteLine
       }
       else
       {
-        // filecontent is empty
+        // file content is empty
         Log(datedLogFileName, argumentDictionary["log"], "The file cannot be processed because it is empty.");
       }
 
@@ -375,7 +411,18 @@ namespace DeleteLine
       {
         // Managing return code : we write a file with the return code which will be read by the DOS script to import SQL tables into a database.
         string returnCodeFileName = string.Empty;
-        returnCodeFileName = Settings.Default.ReturnCodeFileName == string.Empty ? "ReturnCode.txt" : Settings.Default.ReturnCodeFileName;
+        if (Settings.Default.ReturnCodeFileName.Trim() == string.Empty)
+        {
+          Settings.Default.ReturnCodeFileName = "ReturnCode.txt";
+          Settings.Default.Save();
+        }
+        else
+        {
+          Settings.Default.ReturnCodeFileName = RemoveWindowsForbiddenCharacters(Settings.Default.ReturnCodeFileName);
+          Settings.Default.Save();
+        }
+
+        returnCodeFileName = Settings.Default.ReturnCodeFileName;
         try
         {
           File.Delete(returnCodeFileName);
@@ -468,11 +515,11 @@ namespace DeleteLine
     /// <summary>
     /// Remove all Windows forbidden characters for a Windows path.
     /// </summary>
-    /// <param name="path">The initial string to be processed.</param>
+    /// <param name="filename">The initial string to be processed.</param>
     /// <returns>A string without Windows forbidden characters.</returns>
-    private static string RemoveWindowsForbiddenCharacters(string path)
+    private static string RemoveWindowsForbiddenCharacters(string filename)
     {
-      string result = path;
+      string result = filename;
       // We remove all characters which are forbidden for a Windows path
       string[] forbiddenWindowsFilenameCharacters = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|" };
       foreach (var item in forbiddenWindowsFilenameCharacters)
@@ -541,9 +588,9 @@ namespace DeleteLine
     {
       Action<string> display = Console.WriteLine;
       display(string.Empty);
-      display($"DeleteFileLine is a console application written by Freddy Juhel for {Settings.Default.CompanyName}.");
-      display($"DeleteFileLine.exe is in version {GetAssemblyVersion()}");
-      display("DeleteFileLine needs Microsoft .NET framework 3.5 to run, if you don't have it, download it from microsoft.com.");
+      display($"DeleteLine is a console application written by Freddy Juhel for {Settings.Default.CompanyName}.");
+      display($"DeleteLine.exe is in version {GetAssemblyVersion()}");
+      display("DeleteLine needs Microsoft .NET framework 3.5 to run, if you don't have it, download it from microsoft.com.");
       display($"Copyrighted (c) 2017 by {Settings.Default.CompanyName}, all rights reserved.");
       display(string.Empty);
       display("Usage of this program:");
@@ -574,10 +621,10 @@ namespace DeleteLine
       display(string.Empty);
       display("Examples:");
       display(string.Empty);
-      display("DeleteFileLine /filename:MyCSVFile.txt /separator:, /hasheader:true /hasfooter:true /deleteheader:true /deletefooter:true /deletefirstcolumn:true /log:true");
+      display("DeleteLine /filename:MyCSVFile.txt /separator:, /hasheader:true /hasfooter:true /deleteheader:true /deletefooter:true /deletefirstcolumn:true /log:true");
       display(string.Empty);
-      display("DeleteFileLine /help (this help)");
-      display("DeleteFileLine /? (this help)");
+      display("DeleteLine /help (this help)");
+      display("DeleteLine /? (this help)");
       display(string.Empty);
     }
   }
