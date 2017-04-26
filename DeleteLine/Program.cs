@@ -38,8 +38,8 @@ namespace DeleteLine
         {"log", "false"},
         {"removeemptylines", "true"},
         {"countlines", "false"},
-        {"verifyheaderandfooter", "false"}
-        //{"trimtrailingspace", "false"} // to be added if necessary, dangerous because of the last value
+        {"verifyheaderandfooter", "false"},
+        {"language", "english"}
       };
       // the variable numberOfInitialDictionaryItems is used for the log to list all non-standard arguments passed in.
       int numberOfInitialDictionaryItems = argumentDictionary.Count;
@@ -51,6 +51,7 @@ namespace DeleteLine
       bool fileHasFooter = false;
       string datedLogFileName = string.Empty;
       byte returnCode = 1;
+      string currentLanguage = "english";
       Stopwatch chrono = new Stopwatch();
       if (arguments.Length == 0 || arguments[0].ToLower().Contains("help") || arguments[0].Contains("?"))
       {
@@ -132,7 +133,7 @@ namespace DeleteLine
         {
           // If we have an argument without the colon sign (:) then we add it to the dictionary
           argumentKey = argument;
-          argumentValue = "The argument passed in does not have any value. The colon sign (:) is missing.";
+          argumentValue = $"The argument passed in ({argumentKey}) does not have any value. The colon sign (:) is missing.";
         }
 
         if (argumentDictionary.ContainsKey(argumentKey))
@@ -188,7 +189,7 @@ namespace DeleteLine
       }
 
       // Add version of the program at the beginning of the log
-      Log(datedLogFileName, argumentDictionary["log"], $"{Assembly.GetExecutingAssembly().GetName().Name} is in version {GetAssemblyVersion()}");
+      Log(datedLogFileName, argumentDictionary["log"], $"{Assembly.GetExecutingAssembly().GetName().Name} is in version {GetAssemblyVersion()}.");
 
       // We log all arguments passed in.
       foreach (KeyValuePair<string, string> keyValuePair in argumentDictionary)
@@ -200,10 +201,10 @@ namespace DeleteLine
         }
       }
 
-      //we log extra arguments
+      // We log extra arguments passed in.
       if (hasExtraArguments && argumentDictionary["log"] == "true")
       {
-        Log(datedLogFileName, argumentDictionary["log"], "Here are a list of argument passed in but not understood and thus not used (for debug purpose only).");
+        Log(datedLogFileName, argumentDictionary["log"], "Here are a list of argument passed in but not understood and thus not used (for debug purpose only):");
         for (int i = numberOfInitialDictionaryItems; i <= argumentDictionary.Count - 1; i++)
         {
           Log(datedLogFileName, argumentDictionary["log"], $"Extra argument requested: {argumentDictionary.Keys.ElementAt(i)}");
@@ -231,8 +232,7 @@ namespace DeleteLine
                 if (tmpLine != null && tmpLine.StartsWith("9;"))
                 {
                   fileHasFooter = true;
-                  bool parseLastLineTointOk = int.TryParse(tmpLine.Substring(2, tmpLine.Length - 2).TrimStart('0'), NumberStyles.Any,
-                    CultureInfo.InvariantCulture, out numberOfLineInfile);
+                  bool parseLastLineTointOk = int.TryParse(tmpLine.Substring(2, tmpLine.Length - 2).TrimStart('0').TrimEnd(argumentDictionary["separator"][0]), NumberStyles.Any, CultureInfo.InvariantCulture, out numberOfLineInfile);
                   if (!parseLastLineTointOk)
                   {
                     const string tmpErrorMessage = "There was an error while parsing the last line of the file to an integer to know the number of lines in the file.";
@@ -255,25 +255,25 @@ namespace DeleteLine
               }
             }
 
-            Log(datedLogFileName, argumentDictionary["log"], "The file has been read correctly");
+            Log(datedLogFileName, argumentDictionary["log"], "The file has been read correctly.");
             if (argumentDictionary["countlines"] == "true")
             {
-              Log(datedLogFileName, argumentDictionary["log"], $"The footer of the file states {numberOfLineInfile} lines.");
+              Log(datedLogFileName, argumentDictionary["log"], $"The footer of the file states {numberOfLineInfile} line{Plural(numberOfLineInfile)}.");
             }
           }
           else
           {
-            Log(datedLogFileName, argumentDictionary["log"], $"the filename: {argumentDictionary["filename"]} could be read because it doesn't exist");
+            Log(datedLogFileName, argumentDictionary["log"], $"the filename: {argumentDictionary["filename"]} could be read because it doesn't exist.");
           }
         }
         else
         {
-          Log(datedLogFileName, argumentDictionary["log"], $"the filename: {argumentDictionary["filename"]} is empty, it cannot be read");
+          Log(datedLogFileName, argumentDictionary["log"], $"the filename: {argumentDictionary["filename"]} is empty, it cannot be read.");
         }
       }
       catch (Exception exception)
       {
-        Log(datedLogFileName, argumentDictionary["log"], $"There was an error while processing the file {exception}");
+        Log(datedLogFileName, argumentDictionary["log"], $"There was an error while processing the file {exception}.");
         Console.WriteLine($"There was an error while processing the file {exception}");
       }
 
@@ -289,17 +289,17 @@ namespace DeleteLine
         {
           if (argumentDictionary["countlines"] == "true")
           {
-            Log(datedLogFileName, argumentDictionary["log"], $"{numberOfLineInfile} line{Plural(numberOfLineInfile)} stated in footer");
+            Log(datedLogFileName, argumentDictionary["log"], $"{numberOfLineInfile} line{Plural(numberOfLineInfile)} stated in footer.");
             Log(datedLogFileName, argumentDictionary["log"], $"Footer (which is the last line) has been removed, it was: {fileContent[fileContent.Count - 1]}");
           }
 
-          Log(datedLogFileName, argumentDictionary["log"], $"The file has {fileContent.Count - 1} line{Plural(fileContent.Count)}");
+          Log(datedLogFileName, argumentDictionary["log"], $"The file has {fileContent.Count - 1} line{Plural(fileContent.Count)}.");
           fileContent.RemoveAt(fileContent.Count - 1);
         }
 
         if (argumentDictionary["deletefirstcolumn"] == "true" && fileContent.Count != 0)
         {
-          Log(datedLogFileName, argumentDictionary["log"], "The first column has been deleted");
+          Log(datedLogFileName, argumentDictionary["log"], "The first column has been deleted.");
           fileTransformed = new List<string>();
           foreach (string line in fileContent)
           {
@@ -320,7 +320,7 @@ namespace DeleteLine
         }
         else if (fileContent.Count != numberOfLineInfile && argumentDictionary["countlines"] == "true")
         {
-          Log(datedLogFileName, argumentDictionary["log"], $"The file has not the same number of lines {fileContent.Count} as stated in the last line which is {numberOfLineInfile} line{Plural(numberOfLineInfile)}s.");
+          Log(datedLogFileName, argumentDictionary["log"], $"The file has not the same number of lines {fileContent.Count} as stated in the last line which is {numberOfLineInfile} line{Plural(numberOfLineInfile)}.");
           returnCode = Settings.Default.ReturnCodeKO;
         }
 
@@ -346,11 +346,11 @@ namespace DeleteLine
               }
             }
 
-            Log(datedLogFileName, argumentDictionary["log"], $"The transformed file has been written correctly:{argumentDictionary["filename"]}");
+            Log(datedLogFileName, argumentDictionary["log"], $"The transformed file has been written correctly:{argumentDictionary["filename"]}.");
           }
           catch (Exception exception)
           {
-            Log(datedLogFileName, argumentDictionary["log"], $"The filename {argumentDictionary["filename"]} cannot be written");
+            Log(datedLogFileName, argumentDictionary["log"], $"The filename {argumentDictionary["filename"]} cannot be written.");
             Log(datedLogFileName, argumentDictionary["log"], $"The exception is: {exception}");
           }
         }
@@ -381,12 +381,12 @@ namespace DeleteLine
 
         if (argumentDictionary["deleteheader"] == "true")
         {
-          Log(datedLogFileName, argumentDictionary["log"], $"The header was {Negative(fileHasHeader)}found in the file.");
+          Log(datedLogFileName, argumentDictionary["log"], $"The header (first line starts with 0;) was {Negative(fileHasHeader)}found in the file.");
         }
 
         if (argumentDictionary["deletefooter"] == "true")
         {
-          Log(datedLogFileName, argumentDictionary["log"], $"The footer was {Negative(fileHasFooter)}found in the file.");
+          Log(datedLogFileName, argumentDictionary["log"], $"The footer (last line starts with 9;) was {Negative(fileHasFooter)}found in the file.");
         }
       }
       else
@@ -621,7 +621,7 @@ namespace DeleteLine
       display("/removeemptylines:<true or false> true by default");
       display("countlines:<true or false> false by default");
       display("verifyheaderandfooter:<true or false> false by default");
-      //display("trimtrailingspace:<true or false> false by default");
+      display("language:<french or english> english by default");
       display(string.Empty);
       display("Examples:");
       display(string.Empty);
