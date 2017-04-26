@@ -232,8 +232,7 @@ namespace DeleteLine
                 if (tmpLine != null && tmpLine.StartsWith("9;"))
                 {
                   fileHasFooter = true;
-                  bool parseLastLineTointOk = int.TryParse(tmpLine.Substring(2, tmpLine.Length - 2).TrimStart('0'), NumberStyles.Any,
-                    CultureInfo.InvariantCulture, out numberOfLineInfile);
+                  bool parseLastLineTointOk = int.TryParse(tmpLine.Substring(2, tmpLine.Length - 2).TrimStart('0').TrimEnd(argumentDictionary["separator"][0]), NumberStyles.Any, CultureInfo.InvariantCulture, out numberOfLineInfile);
                   if (!parseLastLineTointOk)
                   {
                     const string tmpErrorMessage = "There was an error while parsing the last line of the file to an integer to know the number of lines in the file.";
