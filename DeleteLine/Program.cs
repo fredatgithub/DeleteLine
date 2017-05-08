@@ -518,10 +518,14 @@ namespace DeleteLine
     /// <param name="filename">The initial string to be processed.</param>
     /// <returns>A string without Windows forbidden characters.</returns>
 <<<<<<< HEAD
+<<<<<<< HEAD
     public static string RemoveWindowsForbiddenCharacters(string path)
 =======
     private static string RemoveWindowsForbiddenCharacters(string filename)
 >>>>>>> 601617f72994791ac268577b17c944c514ff1de4
+=======
+    public static string RemoveWindowsForbiddenCharacters(string filename)
+>>>>>>> e16255f7ce222da30b76da3a981fc6a11ab6e05d
     {
       string result = filename;
       // We remove all characters which are forbidden for a Windows path
