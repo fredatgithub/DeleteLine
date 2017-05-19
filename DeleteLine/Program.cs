@@ -22,6 +22,7 @@ namespace DeleteLine
     /// </param>
     private static void Main(string[] arguments)
     {
+      //Debug.Print(arguments[0]);
       Action<string> display = Console.WriteLine;
       var argumentDictionary = new Dictionary<string, string>
       {
@@ -38,8 +39,8 @@ namespace DeleteLine
         {"log", "false"},
         {"removeemptylines", "true"},
         {"countlines", "false"},
-        {"verifyheaderandfooter", "false"},
-        {"language", "english"}
+        {"verifyheaderandfooter", "false"}
+        //{"language", "english"}
       };
       // the variable numberOfInitialDictionaryItems is used for the log to list all non-standard arguments passed in.
       int numberOfInitialDictionaryItems = argumentDictionary.Count;
@@ -112,14 +113,14 @@ namespace DeleteLine
         Console.WriteLine("There was an error while trying to delete previous returncode.txt file.");
         Console.WriteLine($"The exception was {unauthorizedAccessException.Message}");
       }
-      catch(Exception exception)
+      catch (Exception exception)
       {
         Console.WriteLine("There was an error while trying to delete previous returncode.txt file.");
         Console.WriteLine($"The exception was {exception.Message}");
       }
 
       // we split arguments into the dictionary
-        foreach (string argument in arguments)
+      foreach (string argument in arguments)
       {
         string argumentKey = string.Empty;
         string argumentValue = string.Empty;
@@ -165,19 +166,22 @@ namespace DeleteLine
         Settings.Default.Save();
         datedLogFileName = AddDateToFileName(Settings.Default.LogFileName);
       }
+      else
+      {
+        // we remove Windows forbidden characters from the log file name
+        //argumentDictionary[""] = RemoveWindowsForbiddenCharacters(argumentDictionary["filename"]).TrimStart();
+        Settings.Default.LogFileName = RemoveWindowsForbiddenCharacters(Settings.Default.LogFileName).TrimStart();
+        Settings.Default.Save();
+        datedLogFileName = AddDateToFileName(Settings.Default.LogFileName);
+      }
 
       // if Company name is empty in XML file then we define it with a default value like "Company name"
       if (Settings.Default.CompanyName.Trim() == string.Empty)
       {
-        Settings.Default.LogFileName = "Company name";
+        Settings.Default.CompanyName = "Company name";
         Settings.Default.Save();
       }
-      else
-      {
-        Settings.Default.LogFileName = RemoveWindowsForbiddenCharacters(Settings.Default.LogFileName);
-        Settings.Default.Save();
-      }
-
+      
       if (argumentDictionary["filename"].Trim() != string.Empty)
       {
         datedLogFileName = AddDateToFileName(Settings.Default.LogFileName);
@@ -509,7 +513,7 @@ namespace DeleteLine
     /// <returns>Returns the string "Not" or nothing according to the boolean value passed in.</returns>
     public static string Negative(bool booleanValue)
     {
-      return booleanValue ? "" : "not ";
+      return booleanValue ? string.Empty : "not ";
     }
 
     /// <summary>
@@ -517,11 +521,11 @@ namespace DeleteLine
     /// </summary>
     /// <param name="filename">The initial string to be processed.</param>
     /// <returns>A string without Windows forbidden characters.</returns>
-    public static string RemoveWindowsForbiddenCharacters(string filename)
+    private static string RemoveWindowsForbiddenCharacters(string filename)
     {
       string result = filename;
       // We remove all characters which are forbidden for a Windows path
-      string[] forbiddenWindowsFilenameCharacters = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|" };
+      string[] forbiddenWindowsFilenameCharacters = { "/", ":", "*", "?", "\"", "<", ">", "|" };
       foreach (var item in forbiddenWindowsFilenameCharacters)
       {
         result = result.Replace(item, string.Empty);
@@ -537,9 +541,11 @@ namespace DeleteLine
     /// <returns>A string with the date at the end of the file name.</returns>
     public static string AddDateToFileName(string fileName)
     {
+      if (fileName == string.Empty) return string.Empty;
       string result = string.Empty;
       // We strip the fileName and add a datetime before the extension of the filename.
-      string tmpFileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+      //Don't use Path.GetFileNameWithoutExtension(fileName) because of UNC path.
+      string tmpFileNameWithoutExtension = fileName.Substring(0, fileName.IndexOf('.'));
       string tmpFileNameExtension = Path.GetExtension(fileName);
       string tmpDateTime = DateTime.Now.ToShortDateString();
       tmpDateTime = tmpDateTime.Replace('/', '-');
@@ -581,6 +587,18 @@ namespace DeleteLine
       }
     }
 
+    /// <summary>Get a file name safer.</summary>
+    /// <param name="fromString">The path to be checked for safe characters.</param>
+    /// <returns>A safe file name stripped of any unsafe characters.</returns>
+    private static string GetSafeFileName(string fromString)
+    {
+      var invalidChars = Path.GetInvalidFileNameChars();
+      const char replacementChar = '_';
+      return new string(fromString.Select((inputChar) =>
+          invalidChars.Any((invalidChar) =>
+          (inputChar == invalidChar)) ? replacementChar : inputChar).ToArray());
+    }
+
     /// <summary>
     /// If the user requests help or gives no argument, then we display the help section.
     /// </summary>
@@ -617,7 +635,7 @@ namespace DeleteLine
       display("/removeemptylines:<true or false> true by default");
       display("countlines:<true or false> false by default");
       display("verifyheaderandfooter:<true or false> false by default");
-      display("language:<french or english> english by default");
+      //display("language:<french or english> english by default");
       display(string.Empty);
       display("Examples:");
       display(string.Empty);
