@@ -39,8 +39,9 @@ namespace DeleteLine
         {"log", "false"},
         {"removeemptylines", "true"},
         {"countlines", "false"},
-        {"verifyheaderandfooter", "false"}
-        //{"language", "english"}
+        {"verifyheaderandfooter", "false"},
+        {"errordescription", string.Empty },
+        {"language", "english"}
       };
       // the variable numberOfInitialDictionaryItems is used for the log to list all non-standard arguments passed in.
       int numberOfInitialDictionaryItems = argumentDictionary.Count;
@@ -57,6 +58,12 @@ namespace DeleteLine
       if (arguments.Length == 0 || arguments[0].ToLower().Contains("help") || arguments[0].Contains("?"))
       {
         Usage();
+        return;
+      }
+
+      if (arguments[0].ToLower().Contains("descriptionerror"))
+      {
+        DisplayErrorList();
         return;
       }
 
@@ -458,7 +465,7 @@ namespace DeleteLine
       Log(datedLogFileName, argumentDictionary["log"], $"END OF LOG.");
       Log(datedLogFileName, argumentDictionary["log"], "-----------");
     }
-
+    
     /// <summary>
     /// Convert a Time span to days hours minutes seconds milliseconds.
     /// </summary>
@@ -524,6 +531,7 @@ namespace DeleteLine
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     public static string RemoveWindowsForbiddenCharacters(string path)
 =======
     private static string RemoveWindowsForbiddenCharacters(string filename)
@@ -534,6 +542,9 @@ namespace DeleteLine
 =======
     private static string RemoveWindowsForbiddenCharacters(string filename)
 >>>>>>> f2777a4cb783711b72823bf86a00e484f13ea700
+=======
+    public static string RemoveWindowsForbiddenCharacters(string filename)
+>>>>>>> 90856f21c7d853186c89c1901740bfb452a18270
     {
       string result = filename;
       // We remove all characters which are forbidden for a Windows path
@@ -645,9 +656,10 @@ namespace DeleteLine
       display("/newName:<new name of the file which has been processed>");
       display("/log:<true or false> false by default");
       display("/removeemptylines:<true or false> true by default");
-      display("countlines:<true or false> false by default");
-      display("verifyheaderandfooter:<true or false> false by default");
-      //display("language:<french or english> english by default");
+      display("/countlines:<true or false> false by default");
+      display("/verifyheaderandfooter:<true or false> false by default");
+      display("/errordescription displays all error return code");
+      display("language:<french or english> english by default");
       display(string.Empty);
       display("Examples:");
       display(string.Empty);
@@ -655,6 +667,26 @@ namespace DeleteLine
       display(string.Empty);
       display("DeleteLine /help (this help)");
       display("DeleteLine /? (this help)");
+      display(string.Empty);
+    }
+
+    /// <summary>
+    /// Display all errors from config file.
+    /// </summary>
+    private static void DisplayErrorList()
+    {
+      Action<string> display = Console.WriteLine;
+      display(string.Empty);
+      display($"DeleteLine is a console application written by Freddy Juhel for {Settings.Default.CompanyName}.");
+      display($"DeleteLine.exe is in version {GetAssemblyVersion()}");
+      display("DeleteLine needs Microsoft .NET framework 3.5 to run, if you don't have it, download it from microsoft.com.");
+      display($"Copyrighted (c) 2017 by {Settings.Default.CompanyName}, all rights reserved.");
+      display(string.Empty);
+      display("List of return error:");
+      display($"Return code {Settings.Default.ReturnCodeOK} is Return Code for everything is OK");
+      display($"Error {Settings.Default.ReturnCodeKO} is Return Code KO");
+      display($"Error {Settings.Default.ReturnCodeFooterMissing} is Return Code for Footer Missing");
+      display($"Error {Settings.Default.ReturnCodeHeaderMissing} is Return Code for Header Missing");
       display(string.Empty);
     }
   }
