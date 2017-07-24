@@ -362,8 +362,6 @@ namespace DeleteLine
           }
         }
 
-        // if (argumentDictionary["samename"] == "false" && Settings.Default.outputfilename != string.Empty) 'Modification AOU 01-06-2017
-
         if (argumentDictionary["samename"] == "false" && argumentDictionary["outputfilename"] != string.Empty)
         {
           try
@@ -379,7 +377,6 @@ namespace DeleteLine
               }
             }
 
-            //Log(datedLogFileName, argumentDictionary["log"], $"The transformed file has been written correctly with the new name {Settings.Default.outputfilename}."); 'Modification AOU 01-06-2017
             Log(datedLogFileName, argumentDictionary["log"], $"The transformed file has been written correctly with the new name {argumentDictionary["outputfilename"]}.");
           }
           catch (Exception exception)
