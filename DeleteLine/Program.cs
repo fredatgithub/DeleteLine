@@ -22,26 +22,24 @@ namespace DeleteLine
     /// </param>
     private static void Main(string[] arguments)
     {
-      //Debug.Print(arguments[0]);
       Action<string> display = Console.WriteLine;
       var argumentDictionary = new Dictionary<string, string>
-      {
-        // Initialization of the dictionary with default values
-        {"filename", string.Empty},
-        {"separator", ";" },
-        {"hasheader", "false" },
-        {"hasfooter", "false"},
-        {"deleteheader", "false"},
-        {"deletefooter", "false"},
-        {"deletefirstcolumn", "false"},
-        {"samename", "true"},
-        {"newname", string.Empty},
-        {"log", "false"},
-        {"removeemptylines", "true"},
-        {"countlines", "false"},
-        {"verifyheaderandfooter", "false"},
-        {"errordescription", string.Empty },
-        {"language", "english"}
+          {
+            // Initialization of the dictionary with default values
+            {"filename", string.Empty},
+            {"outputfilename", string.Empty},
+            {"separator", ";" },
+            {"hasheader", "false" },
+            {"hasfooter", "false"},
+            {"deleteheader", "false"},
+            {"deletefooter", "false"},
+            {"deletefirstcolumn", "false"},
+            {"samename", "false"},
+            {"newname", string.Empty},
+            {"log", "false"},
+            {"removeemptylines", "true"},
+            {"countlines", "false"},
+            {"verifyheaderandfooter", "false"}
       };
       // the variable numberOfInitialDictionaryItems is used for the log to list all non-standard arguments passed in.
       int numberOfInitialDictionaryItems = argumentDictionary.Count;
@@ -53,29 +51,26 @@ namespace DeleteLine
       bool fileHasFooter = false;
       string datedLogFileName = string.Empty;
       byte returnCode = 1;
-      string currentLanguage = "english";
       Stopwatch chrono = new Stopwatch();
+
       if (arguments.Length == 0 || arguments[0].ToLower().Contains("help") || arguments[0].Contains("?"))
       {
         Usage();
         return;
       }
 
-      if (arguments[0].ToLower().Contains("descriptionerror"))
-      {
-        DisplayErrorList();
-        return;
-      }
-
       chrono.Start();
-      // we remove Windows forbidden characters from return code file name
+      // Saving application version number for easy config file reading.
+      Settings.Default.ApplicationVersionNumber = GetAssemblyVersion();
+      Settings.Default.Save();
+      // We remove Windows forbidden characters from return code file name
       if (Settings.Default.ReturnCodeFileName != RemoveWindowsForbiddenCharacters(Settings.Default.ReturnCodeFileName))
       {
         Settings.Default.ReturnCodeFileName = RemoveWindowsForbiddenCharacters(Settings.Default.ReturnCodeFileName.Trim());
         Settings.Default.Save();
       }
 
-      // we delete previous coderetour.txt file
+      // We delete previous coderetour.txt file
       if (Settings.Default.ReturnCodeFileName.Trim() == string.Empty)
       {
         Settings.Default.ReturnCodeFileName = "ReturnCode.txt";
@@ -139,7 +134,7 @@ namespace DeleteLine
         }
         else
         {
-          // If we have an argument without the colon sign (:) then we add it to the dictionary
+          // If we have an argument without the colon sign (:) then we add it to the dictionary as extra argument not taken into account
           argumentKey = argument;
           argumentValue = $"The argument passed in ({argumentKey}) does not have any value. The colon sign (:) is missing.";
         }
@@ -166,6 +161,9 @@ namespace DeleteLine
       // check that filename doesn't any Windows forbidden characters and trim all space characters at the start of the name.
       argumentDictionary["filename"] = RemoveWindowsForbiddenCharacters(argumentDictionary["filename"]).TrimStart();
 
+      // check that output file name doesn't any Windows forbidden characters and trim all space characters at the start of the name.
+      argumentDictionary["outputfilename"] = RemoveWindowsForbiddenCharacters(argumentDictionary["outputfilename"]).TrimStart();
+
       // if log file name is empty in XML file then we define it with a default value like "Log"
       if (Settings.Default.LogFileName.Trim() == string.Empty)
       {
@@ -176,10 +174,10 @@ namespace DeleteLine
       else
       {
         // we remove Windows forbidden characters from the log file name
-        //argumentDictionary[""] = RemoveWindowsForbiddenCharacters(argumentDictionary["filename"]).TrimStart();
         Settings.Default.LogFileName = RemoveWindowsForbiddenCharacters(Settings.Default.LogFileName).TrimStart();
         Settings.Default.Save();
-        datedLogFileName = AddDateToFileName(Settings.Default.LogFileName);
+        // we leave the name of the log file name as the user wants including the path with UNC possible
+        datedLogFileName = Settings.Default.LogFileName;
       }
 
       // if Company name is empty in XML file then we define it with a default value like "Company name"
@@ -188,12 +186,8 @@ namespace DeleteLine
         Settings.Default.CompanyName = "Company name";
         Settings.Default.Save();
       }
-      
-      if (argumentDictionary["filename"].Trim() != string.Empty)
-      {
-        datedLogFileName = AddDateToFileName(Settings.Default.LogFileName);
-      }
-      else
+
+      if (argumentDictionary["filename"].Trim() == string.Empty)
       {
         Usage();
         return;
@@ -228,6 +222,7 @@ namespace DeleteLine
       {
         if (argumentDictionary["filename"].Trim() != string.Empty)
         {
+          //string FilePath = argumentDictionary["inputFilePath"] + argumentDictionary["filename"];
           if (File.Exists(argumentDictionary["filename"]))
           {
             using (StreamReader sr = new StreamReader(argumentDictionary["filename"]))
@@ -243,7 +238,7 @@ namespace DeleteLine
                 if (tmpLine != null && tmpLine.StartsWith("9;"))
                 {
                   fileHasFooter = true;
-                  bool parseLastLineTointOk = int.TryParse(tmpLine.Substring(2, tmpLine.Length - 2).TrimStart('0').TrimEnd(argumentDictionary["separator"][0]), NumberStyles.Any, CultureInfo.InvariantCulture, out numberOfLineInfile);
+                  bool parseLastLineTointOk = int.TryParse(tmpLine.Substring(2, tmpLine.Length - 2).TrimEnd(argumentDictionary["separator"][0]), NumberStyles.Any, CultureInfo.InvariantCulture, out numberOfLineInfile);
                   if (!parseLastLineTointOk)
                   {
                     const string tmpErrorMessage = "There was an error while parsing the last line of the file to an integer to know the number of lines in the file.";
@@ -310,6 +305,7 @@ namespace DeleteLine
 
         if (argumentDictionary["deletefirstcolumn"] == "true" && fileContent.Count != 0)
         {
+
           Log(datedLogFileName, argumentDictionary["log"], "The first column has been deleted.");
           fileTransformed = new List<string>();
           foreach (string line in fileContent)
@@ -320,7 +316,7 @@ namespace DeleteLine
           fileContent = fileTransformed;
         }
 
-        // we free up memory
+        // We free up memory
         fileTransformed = null;
 
         //We check integrity of the file i.e. number of line stated equals to the number of line written
@@ -366,11 +362,13 @@ namespace DeleteLine
           }
         }
 
-        if (argumentDictionary["samename"] == "false" && argumentDictionary["newname"] != string.Empty)
+        // if (argumentDictionary["samename"] == "false" && Settings.Default.outputfilename != string.Empty) 'Modification AOU 01-06-2017
+
+        if (argumentDictionary["samename"] == "false" && argumentDictionary["outputfilename"] != string.Empty)
         {
           try
           {
-            using (StreamWriter sw = new StreamWriter(argumentDictionary["newname"]))
+            using (StreamWriter sw = new StreamWriter(argumentDictionary["outputfilename"]))
             {
               foreach (string line in fileContent)
               {
@@ -381,12 +379,39 @@ namespace DeleteLine
               }
             }
 
-            Log(datedLogFileName, argumentDictionary["log"], $"The transformed file has been written correctly with the new name {argumentDictionary["newname"]}.");
+            //Log(datedLogFileName, argumentDictionary["log"], $"The transformed file has been written correctly with the new name {Settings.Default.outputfilename}."); 'Modification AOU 01-06-2017
+            Log(datedLogFileName, argumentDictionary["log"], $"The transformed file has been written correctly with the new name {argumentDictionary["outputfilename"]}.");
           }
           catch (Exception exception)
           {
-            Log(datedLogFileName, argumentDictionary["log"], $"The filename: {argumentDictionary["newname"]} cannot be written.");
+            Log(datedLogFileName, argumentDictionary["log"], $"The filename: {argumentDictionary["outputfilename"]} cannot be written.");
             Log(datedLogFileName, argumentDictionary["log"], $"The exception is: {exception}");
+          }
+        }
+        else
+        {
+          if (argumentDictionary["newname"] != string.Empty)
+          {
+            try
+            {
+              using (StreamWriter sw = new StreamWriter(argumentDictionary["newname"]))
+              {
+                foreach (string line in fileContent)
+                {
+                  if (argumentDictionary["removeemptylines"] == "true" && line.Trim() != string.Empty)
+                  {
+                    sw.WriteLine(line);
+                  }
+                }
+              }
+
+              Log(datedLogFileName, argumentDictionary["log"], $"The transformed file has been written correctly with the new name {argumentDictionary["newname"]}.");
+            }
+            catch (Exception exception)
+            {
+              Log(datedLogFileName, argumentDictionary["log"], $"The filename: {argumentDictionary["newname"]} cannot be written.");
+              Log(datedLogFileName, argumentDictionary["log"], $"The exception is: {exception}");
+            }
           }
         }
 
@@ -436,7 +461,11 @@ namespace DeleteLine
         returnCodeFileName = Settings.Default.ReturnCodeFileName;
         try
         {
-          File.Delete(returnCodeFileName);
+          if (File.Exists(returnCodeFileName))
+          {
+            File.Delete(returnCodeFileName);
+          }
+
           StreamWriter sw = new StreamWriter(returnCodeFileName, false);
           sw.WriteLine(returnCode);
           sw.Close();
@@ -462,10 +491,10 @@ namespace DeleteLine
       chrono.Stop();
       TimeSpan tickTimeSpan = chrono.Elapsed;
       Log(datedLogFileName, argumentDictionary["log"], $"This program took {chrono.ElapsedMilliseconds} milliseconds which is {ConvertToTimeString(tickTimeSpan)}.");
-      Log(datedLogFileName, argumentDictionary["log"], $"END OF LOG.");
+      Log(datedLogFileName, argumentDictionary["log"], "END OF LOG.");
       Log(datedLogFileName, argumentDictionary["log"], "-----------");
     }
-    
+
     /// <summary>
     /// Convert a Time span to days hours minutes seconds milliseconds.
     /// </summary>
@@ -528,11 +557,12 @@ namespace DeleteLine
     /// </summary>
     /// <param name="filename">The initial string to be processed.</param>
     /// <returns>A string without Windows forbidden characters.</returns>
-    public static string RemoveWindowsForbiddenCharacters(string filename)
+    private static string RemoveWindowsForbiddenCharacters(string filename)
     {
       string result = filename;
       // We remove all characters which are forbidden for a Windows path
-      string[] forbiddenWindowsFilenameCharacters = { "/", ":", "*", "?", "\"", "<", ">", "|" };
+
+      string[] forbiddenWindowsFilenameCharacters = { "/", "\":", "*", "?", "\"", "<", ">", "|" };
       foreach (var item in forbiddenWindowsFilenameCharacters)
       {
         result = result.Replace(item, string.Empty);
@@ -630,6 +660,7 @@ namespace DeleteLine
       display("/filename is the same as /FileName or /fileName or /FILENAME");
       display(string.Empty);
       display("/fileName:<name of the file to be processed>");
+      display("/output file name:<name of the file to be written after being processed>");
       display("/separator:<the CSV separator> semicolon (;) is the default separator");
       display("/hasHeader:<true or false> false by default");
       display("/hasFooter:<true or false> false by default");
@@ -640,10 +671,8 @@ namespace DeleteLine
       display("/newName:<new name of the file which has been processed>");
       display("/log:<true or false> false by default");
       display("/removeemptylines:<true or false> true by default");
-      display("/countlines:<true or false> false by default");
-      display("/verifyheaderandfooter:<true or false> false by default");
-      display("/errordescription displays all error return code");
-      display("language:<french or english> english by default");
+      display("countlines:<true or false> false by default");
+      display("verifyheaderandfooter:<true or false> false by default");
       display(string.Empty);
       display("Examples:");
       display(string.Empty);
@@ -651,26 +680,6 @@ namespace DeleteLine
       display(string.Empty);
       display("DeleteLine /help (this help)");
       display("DeleteLine /? (this help)");
-      display(string.Empty);
-    }
-
-    /// <summary>
-    /// Display all errors from config file.
-    /// </summary>
-    private static void DisplayErrorList()
-    {
-      Action<string> display = Console.WriteLine;
-      display(string.Empty);
-      display($"DeleteLine is a console application written by Freddy Juhel for {Settings.Default.CompanyName}.");
-      display($"DeleteLine.exe is in version {GetAssemblyVersion()}");
-      display("DeleteLine needs Microsoft .NET framework 3.5 to run, if you don't have it, download it from microsoft.com.");
-      display($"Copyrighted (c) 2017 by {Settings.Default.CompanyName}, all rights reserved.");
-      display(string.Empty);
-      display("List of return error:");
-      display($"Return code {Settings.Default.ReturnCodeOK} is Return Code for everything is OK");
-      display($"Error {Settings.Default.ReturnCodeKO} is Return Code KO");
-      display($"Error {Settings.Default.ReturnCodeFooterMissing} is Return Code for Footer Missing");
-      display($"Error {Settings.Default.ReturnCodeHeaderMissing} is Return Code for Header Missing");
       display(string.Empty);
     }
   }
